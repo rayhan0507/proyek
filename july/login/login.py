@@ -1,5 +1,5 @@
 from login_oop_db import check_data, add_data
-import mariadb
+
 class Login:
     def __init__(self, user, password):
         self.user = user
