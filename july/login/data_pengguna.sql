@@ -6,4 +6,12 @@ CREATE TABLE if NOT EXISTS pengguna(
 	password_user VARCHAR(50)
 );
 
+
+
 SELECT * FROM pengguna
+
+DELETE FROM pengguna WHERE idUser IS NULL;
+
+ALTER TABLE pengguna 
+MODIFY idUser INT NOT NULL AUTO_INCREMENT,
+ADD PRIMARY KEY (idUser);
