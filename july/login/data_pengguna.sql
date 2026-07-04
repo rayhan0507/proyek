@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS login_oop;
+
+CREATE TABLE if NOT EXISTS pengguna(
+	idUser INT PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(50),
+	password_user VARCHAR(50)
+);
+
+SELECT * FROM pengguna
