@@ -1,25 +1,14 @@
 from mariadb_bank import conn
 
+
 class Bank:
+    """Kelas dasar berisi data identitas pengguna bank."""
+
     def __init__(self, nama, password, alamat, no_hp):
         self.nama = nama
         self.password = password
         self.alamat = alamat
         self.no_hp = no_hp
-
-    def tambah_nasabah(self, nama, password, alamat, no_hp):
-        cur = conn.cursor()
-
-        sql = """
-            INSERT INTO nasabah(nama, alamat, no_hp, password_user)
-            VALUES(?, ?, ?, ?)
-        """
-
-        data = (nama, alamat, no_hp, password)
-        cur.execute(sql, data)
-        conn.commit()
-
-    # def buat_rekening():
 
     # def cari_rekening():
 
@@ -29,17 +18,49 @@ class Bank:
 class Nasabah(Bank):
     def __init__(self, nama, password, alamat, no_hp):
         super().__init__(nama, password, alamat, no_hp)
-        self.nama = nama
-        self.password = password
-        self.alamat = alamat
-        self.no_hp = no_hp
 
-    @property
+    def tambah_nasabah(self):
+        cur = conn.cursor()
+        sql = """
+            INSERT INTO nasabah(nama, alamat, no_hp, password_user)
+            VALUES(?, ?, ?, ?)
+        """
+        data = (self.nama, self.alamat, self.no_hp, self.password)
+        cur.execute(sql, data)
+        conn.commit()
+
     def buat_akun(self):
-        b = Bank(self.nama, self.password, self.alamat, self.no_hp)
-        b.tambah_nasabah(self.nama, self.password, self.alamat, self.no_hp)
+        self.tambah_nasabah()
 
-# class Rekening:
+
+class Rekening:
+    """
+    Sengaja TIDAK mewarisi Nasabah — rekening cuma "menyimpan referensi"
+    ke nama nasabah pemiliknya, bukan "menjadi" nasabah. Kalau dulu
+    Rekening(Nasabah) dan manggil super().__init__(nama) doang, itu yang
+    bikin TypeError karena Nasabah butuh 4 argumen.
+    """
+
+    def __init__(self, nama_nasabah, no_rekening, jenis_rekening, rekening_keaktifan=True, saldo_awal=0):
+        self.nama_nasabah = nama_nasabah
+        self.no_rekening = no_rekening
+        self.jenis_rekening = jenis_rekening
+        self.rekening_keaktifan = rekening_keaktifan
+        self.saldo_awal = saldo_awal
+
+    def tambah_rekening(self):
+        cur = conn.cursor()
+        sql = """
+            INSERT INTO rekening(no_rekening, jenis_rekening, saldo, nama_nasabah, rekening_keaktifan)
+            VALUES(?, ?, ?, ?, ?)
+        """
+        data = (self.no_rekening, self.jenis_rekening, self.saldo_awal, self.nama_nasabah, self.rekening_keaktifan)
+        cur.execute(sql, data)
+        conn.commit()
+
+    def buat_rekening(self):
+        self.tambah_rekening()
+
 
 # class transaksi:
 
@@ -50,11 +71,11 @@ def main():
     user = input("username: ")
     pw = input("password: ")
     alamat = input("alamat: ")
-    no_hp = int(input("nomor hp: "))
+    no_hp = input("nomor hp: ")
     nasabah = Nasabah(user, pw, alamat, no_hp)
-    nasabah.buat_akun
+    nasabah.buat_akun()
 
-    while inp != 7:
+    while inp != "7":
         print("===== BANK RYXA =====")
         print("""
             1. Buat Rekening
@@ -65,8 +86,17 @@ def main():
             6. Semua Rekening
             7. Keluar
         """)
-        inp = int(input("pilih: "))
-        
+        inp = input("pilih: ").strip()
+
+        if inp == "1":
+            no_rekening = input("buat nomor rekening: ")
+            saldo_awal = 0
+            jenis_rekening = input("jenis_rekening (Tabungan/Giro) :")
+            rekening_keaktifan = True
+            r = Rekening(user, no_rekening, jenis_rekening, rekening_keaktifan, saldo_awal)
+            r.buat_rekening()
+            print(f"Rekening {no_rekening} berhasil dibuat.")
+
 
 if __name__ == "__main__":
     main()

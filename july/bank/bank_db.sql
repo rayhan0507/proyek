@@ -11,7 +11,6 @@ CREATE TABLE if not EXISTS nasabah(
 );
 
 CREATE TABLE if not EXISTS rekening(
-    id_nasabah INT,
     no_rekening INT,
     jenis_rekening VARCHAR(50),
     saldo INT,
@@ -31,3 +30,5 @@ CREATE TABLE if not EXISTS transaksi(
 
 );
 
+SELECT * FROM nasabah;
+	SELECT * FROM rekening;
