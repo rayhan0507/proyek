@@ -1,7 +1,17 @@
+from abc import ABC, abstractmethod
 from mariadb_bank import conn
 
 
-class Bank:
+class EntitasBank(ABC):
+    """Kelas abstrak: aturan bahwa setiap entitas bank wajib bisa disimpan ke DB."""
+
+    @abstractmethod
+    def simpan(self):
+        """Wajib diimplementasikan oleh subclass untuk menyimpan data ke database."""
+        pass
+
+
+class Bank(EntitasBank):
     """Kelas dasar berisi data identitas pengguna bank."""
 
     def __init__(self, nama, password, alamat, no_hp):
@@ -11,7 +21,6 @@ class Bank:
         self.no_hp = no_hp
 
     # def cari_rekening():
-
     # def tampilkan_semua():
 
 
@@ -19,7 +28,7 @@ class Nasabah(Bank):
     def __init__(self, nama, password, alamat, no_hp):
         super().__init__(nama, password, alamat, no_hp)
 
-    def tambah_nasabah(self):
+    def simpan(self):
         cur = conn.cursor()
         sql = """
             INSERT INTO nasabah(nama, alamat, no_hp, password_user)
@@ -30,36 +39,32 @@ class Nasabah(Bank):
         conn.commit()
 
     def buat_akun(self):
-        self.tambah_nasabah()
+        self.simpan()
 
 
-class Rekening:
-    """
-    Sengaja TIDAK mewarisi Nasabah — rekening cuma "menyimpan referensi"
-    ke nama nasabah pemiliknya, bukan "menjadi" nasabah. Kalau dulu
-    Rekening(Nasabah) dan manggil super().__init__(nama) doang, itu yang
-    bikin TypeError karena Nasabah butuh 4 argumen.
-    """
+class Rekening(EntitasBank):
 
-    def __init__(self, nama_nasabah, no_rekening, jenis_rekening, rekening_keaktifan=True, saldo_awal=0):
+    def __init__(self, nama_nasabah, no_rekening, jenis_rekening,
+                 rekening_keaktifan=True, saldo_awal=0):
         self.nama_nasabah = nama_nasabah
         self.no_rekening = no_rekening
         self.jenis_rekening = jenis_rekening
         self.rekening_keaktifan = rekening_keaktifan
         self.saldo_awal = saldo_awal
 
-    def tambah_rekening(self):
+    def simpan(self):
         cur = conn.cursor()
         sql = """
             INSERT INTO rekening(no_rekening, jenis_rekening, saldo, nama_nasabah, rekening_keaktifan)
             VALUES(?, ?, ?, ?, ?)
         """
-        data = (self.no_rekening, self.jenis_rekening, self.saldo_awal, self.nama_nasabah, self.rekening_keaktifan)
+        data = (self.no_rekening, self.jenis_rekening, self.saldo_awal,
+                self.nama_nasabah, self.rekening_keaktifan)
         cur.execute(sql, data)
         conn.commit()
 
     def buat_rekening(self):
-        self.tambah_rekening()
+        self.simpan()
 
 
 # class transaksi:
