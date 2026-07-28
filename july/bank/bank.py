@@ -44,13 +44,12 @@ class Nasabah(Bank):
 
 class Rekening(EntitasBank):
 
-    def __init__(self, nama_nasabah, no_rekening, jenis_rekening,
-                 rekening_keaktifan=True, saldo_awal=0):
+    def __init__(self, nama_nasabah, no_rekening, jenis_rekening, rekening_keaktifan=True, saldo=0):
         self.nama_nasabah = nama_nasabah
         self.no_rekening = no_rekening
         self.jenis_rekening = jenis_rekening
         self.rekening_keaktifan = rekening_keaktifan
-        self.saldo_awal = saldo_awal
+        self.saldo = saldo
 
     def simpan(self):
         cur = conn.cursor()
@@ -58,13 +57,27 @@ class Rekening(EntitasBank):
             INSERT INTO rekening(no_rekening, jenis_rekening, saldo, nama_nasabah, rekening_keaktifan)
             VALUES(?, ?, ?, ?, ?)
         """
-        data = (self.no_rekening, self.jenis_rekening, self.saldo_awal,
+        data = (self.no_rekening, self.jenis_rekening, self.saldo,
                 self.nama_nasabah, self.rekening_keaktifan)
         cur.execute(sql, data)
         conn.commit()
 
+    def setor(self, jumlah):
+        cur = conn.cursor()
+        sql = """
+            UPDATE rekening
+            SET saldo = saldo + ?
+            WHERE no_rekening = ? 
+        """
+        data = (jumlah, self.no_rekening)
+        cur.execute(sql, data)
+        conn.commit()
+
+
     def buat_rekening(self):
         self.simpan()
+    def setor_saldo(self, jumlah):
+        self.setor(jumlah)
 
 
 # class transaksi:
@@ -101,6 +114,15 @@ def main():
             r = Rekening(user, no_rekening, jenis_rekening, rekening_keaktifan, saldo_awal)
             r.buat_rekening()
             print(f"Rekening {no_rekening} berhasil dibuat.")
+
+        elif inp == "2":
+            no_rek_tujuan = input("no rekenin: ")
+            isi_saldo = int(input("isi saldo: "))
+            r = Rekening(user, no_rek_tujuan, "", True, isi_saldo)
+            r.setor_saldo(isi_saldo)
+            print(f"Saldo rekening anda ditambahkan")
+
+
 
 
 if __name__ == "__main__":
