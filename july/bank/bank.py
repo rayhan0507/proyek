@@ -7,9 +7,15 @@ class EntitasBank(ABC):
 
     @abstractmethod
     def simpan(self):
-        """Wajib diimplementasikan oleh subclass untuk menyimpan data ke database."""
         pass
 
+class Transaksi(ABC):
+    @abstractmethod
+    def setor(self, jumlah):
+        pass
+    @abstractmethod
+    def tarik(self, jumlah):
+        pass
 
 class Bank(EntitasBank):
     """Kelas dasar berisi data identitas pengguna bank."""
@@ -19,10 +25,6 @@ class Bank(EntitasBank):
         self.password = password
         self.alamat = alamat
         self.no_hp = no_hp
-
-    # def cari_rekening():
-    # def tampilkan_semua():
-
 
 class Nasabah(Bank):
     def __init__(self, nama, password, alamat, no_hp):
@@ -42,7 +44,7 @@ class Nasabah(Bank):
         self.simpan()
 
 
-class Rekening(EntitasBank):
+class Rekening(EntitasBank, Transaksi):
 
     def __init__(self, nama_nasabah, no_rekening, jenis_rekening, rekening_keaktifan=True, saldo=0):
         self.nama_nasabah = nama_nasabah
@@ -73,11 +75,24 @@ class Rekening(EntitasBank):
         cur.execute(sql, data)
         conn.commit()
 
+    def tarik(self, jumlah):
+        cur = conn.cursor()
+        sql = """
+            UPDATE rekening
+            SET saldo = saldo - ?
+            WHERE no_rekening = ?
+        """
+
+        data = (jumlah, self.no_rekening)
+        cur.execute(sql, data)
+        conn.commit()
 
     def buat_rekening(self):
         self.simpan()
     def setor_saldo(self, jumlah):
         self.setor(jumlah)
+    def tarik_saldo(self, jumlah):
+        self.tarik(jumlah)
 
 
 # class transaksi:
@@ -116,13 +131,18 @@ def main():
             print(f"Rekening {no_rekening} berhasil dibuat.")
 
         elif inp == "2":
-            no_rek_tujuan = input("no rekenin: ")
+            no_rek_tujuan = input("no rekening: ")
             isi_saldo = int(input("isi saldo: "))
             r = Rekening(user, no_rek_tujuan, "", True, isi_saldo)
             r.setor_saldo(isi_saldo)
             print(f"Saldo rekening anda ditambahkan")
 
-
+        elif inp == "3":
+            no_rek_tujuan = input("no rekening: ")
+            tarik_saldo = int(input("tarik saldo: "))   
+            r = Rekening(user, no_rek_tujuan, "", True, tarik_saldo)
+            r.tarik_saldo(tarik_saldo)
+            print(f"Anda berhasil menarik saldo anda")
 
 
 if __name__ == "__main__":
