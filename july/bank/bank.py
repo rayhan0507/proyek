@@ -17,6 +17,11 @@ class Transaksi(ABC):
     def tarik(self, jumlah):
         pass
 
+class Melihat(ABC):
+    @abstractmethod
+    def lihat(self, user):
+        pass
+
 class Bank(EntitasBank):
     """Kelas dasar berisi data identitas pengguna bank."""
 
@@ -44,7 +49,7 @@ class Nasabah(Bank):
         self.simpan()
 
 
-class Rekening(EntitasBank, Transaksi):
+class Rekening(EntitasBank, Transaksi, Melihat):
 
     def __init__(self, nama_nasabah, no_rekening, jenis_rekening, rekening_keaktifan=True, saldo=0):
         self.nama_nasabah = nama_nasabah
@@ -87,12 +92,27 @@ class Rekening(EntitasBank, Transaksi):
         cur.execute(sql, data)
         conn.commit()
 
+    def lihat(self, user, no_rekening) -> int:
+        cur = conn.cursor()
+        cur.execute("SELECT nama_nasabah, no_rekening, saldo FROM rekening")
+        data = cur.fetchall()
+
+        for row in data:
+            USER, rek, saldo = row
+            if USER == user and int(rek) == int(no_rekening):
+                return saldo
+            
+
+
     def buat_rekening(self):
         self.simpan()
     def setor_saldo(self, jumlah):
         self.setor(jumlah)
     def tarik_saldo(self, jumlah):
         self.tarik(jumlah)
+    def lihat_saldo(self, user, no_rekening) -> int:
+        print("membuka rekening anda...")
+        print(f"saldo anda: {self.lihat(user, no_rekening)}")
 
 
 # class transaksi:
@@ -143,6 +163,12 @@ def main():
             r = Rekening(user, no_rek_tujuan, "", True, tarik_saldo)
             r.tarik_saldo(tarik_saldo)
             print(f"Anda berhasil menarik saldo anda")
+
+        elif inp == "5":
+            no_rek_tujuan = input("no rekening: ")
+            r = Rekening(user, no_rek_tujuan, "", True, 0)
+            r.lihat_saldo(user, no_rek_tujuan)
+            
 
 
 if __name__ == "__main__":
