@@ -101,7 +101,25 @@ class Rekening(EntitasBank, Transaksi, Melihat):
             USER, rek, saldo = row
             if USER == user and int(rek) == int(no_rekening):
                 return saldo
-            
+
+    def transfer(self, rekening_anda, rekening_tujuan, jumlah_transfer):
+        cur =  conn.cursor()
+        sql_tambah = """
+            UPDATE rekening
+            SET saldo = saldo + ?
+            WHERE no_rekening = ?
+        
+        """ 
+
+        sql_kurang = """
+            UPDATE rekening
+            SET saldo = saldo - ?
+            WHERE no_rekening = ?
+        """
+
+        cur.execute(sql_tambah, (jumlah_transfer, rekening_tujuan))
+        cur.execute(sql_kurang, (jumlah_transfer, rekening_anda))
+        conn.commit()
 
 
     def buat_rekening(self):
@@ -113,9 +131,8 @@ class Rekening(EntitasBank, Transaksi, Melihat):
     def lihat_saldo(self, user, no_rekening) -> int:
         print("membuka rekening anda...")
         print(f"saldo anda: {self.lihat(user, no_rekening)}")
-
-
-# class transaksi:
+    def transfer_bank(self, rekening_anda, rekening_tujuan, transfer_saldo):
+        self.transfer(rekening_anda, rekening_tujuan, transfer_saldo)
 
 
 def main():
@@ -163,6 +180,13 @@ def main():
             r = Rekening(user, no_rek_tujuan, "", True, tarik_saldo)
             r.tarik_saldo(tarik_saldo)
             print(f"Anda berhasil menarik saldo anda")
+
+        elif inp == "4":
+            no_rekening_anda = int(input("nomor rekening anda: "))
+            no_rekening_tujuan = int(input("nomor rekening tujuan: "))
+            jumlah_transfer = int(input("jumlah transfer: "))
+            r = Rekening(user, no_rekening_anda, "", True, 0)
+            r.transfer_bank(no_rekening_anda, no_rekening_tujuan, jumlah_transfer)
 
         elif inp == "5":
             no_rek_tujuan = input("no rekening: ")
