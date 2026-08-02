@@ -103,7 +103,7 @@ class Rekening(EntitasBank, Transaksi, Melihat):
                 return saldo
 
     def transfer(self, rekening_anda, rekening_tujuan, jumlah_transfer):
-        cur =  conn.cursor()
+        cur = conn.cursor()
         sql_tambah = """
             UPDATE rekening
             SET saldo = saldo + ?
@@ -121,6 +121,19 @@ class Rekening(EntitasBank, Transaksi, Melihat):
         cur.execute(sql_kurang, (jumlah_transfer, rekening_anda))
         conn.commit()
 
+    def lihat(self, user):
+        cur = conn.cursor()
+        sql = """
+            SELECT no_rekening FROM rekening
+            WHERE nama_nasabah = ?
+        """
+
+        cur.execute(sql, (user,))
+        row = cur.fetchall()
+        for i, rekening in enumerate(row):
+            print(f"{i + 1}. {rekening[i]}")
+        conn.commit()
+
 
     def buat_rekening(self):
         self.simpan()
@@ -133,7 +146,8 @@ class Rekening(EntitasBank, Transaksi, Melihat):
         print(f"saldo anda: {self.lihat(user, no_rekening)}")
     def transfer_bank(self, rekening_anda, rekening_tujuan, transfer_saldo):
         self.transfer(rekening_anda, rekening_tujuan, transfer_saldo)
-
+    def lihat_rekening(self, user):
+        self.lihat(user)
 
 def main():
     inp = 0
@@ -192,7 +206,11 @@ def main():
             no_rek_tujuan = input("no rekening: ")
             r = Rekening(user, no_rek_tujuan, "", True, 0)
             r.lihat_saldo(user, no_rek_tujuan)
-            
+
+        elif inp == "6":
+            r = Rekening(user, "", "", True, 0)
+            r.lihat_rekening(user)
+
 
 
 if __name__ == "__main__":
