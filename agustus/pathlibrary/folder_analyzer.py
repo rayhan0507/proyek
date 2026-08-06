@@ -35,7 +35,7 @@ class Folder(EntitasFolder):
             print(f"{label}: {val}")
 
 def main():
-    input_path = input("input path anda tanpa driver letter (C:\, D:\ E:\): ")
+    input_path = input("input path anda tanpa driver letter (C:, D: E:): ")
     F = Folder(input_path)
     F.analyzer()
 
