@@ -29,6 +29,3 @@ CREATE TABLE if not EXISTS transaksi(
     FOREIGN KEY (no_rekening) REFERENCES rekening(no_rekening)
 
 );
-
-SELECT * FROM nasabah;
-	SELECT * FROM rekening;
