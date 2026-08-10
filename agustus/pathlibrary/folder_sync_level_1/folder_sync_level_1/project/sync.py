@@ -7,7 +7,7 @@ class Abstract(ABC):
     def analyze(self):
         pass
 
-class Code:
+class Code(Abstract):
     def analyze(self):
         path_source = Path(r"C:\Users\rayhan\Downloads\folder_sync_level_1\folder_sync_level_1\source")
         path_target = Path(r"C:\Users\rayhan\Downloads\folder_sync_level_1\folder_sync_level_1\target")
