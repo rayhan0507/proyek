@@ -21,7 +21,7 @@ class Code(Abstract):
 
     def flattened(self, path: Path, files: Path):
         flag = True
-        flatten_path = Path(r"C:\Users\rayhan\Downloads\folder_flattener_test\flattened")
+        flatten_path = Path.cwd() / "flattened"
 
         for x in flatten_path.rglob(f"*{files.name}"):
             if x.exists():
