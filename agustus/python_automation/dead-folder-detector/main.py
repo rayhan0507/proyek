@@ -44,10 +44,17 @@ class DeadFolderDetector(BaseFolderDetector):
         for i in range(len(self.dead_folders)):
             print(f"{i+1} [DEAD] {self.dead_folders[i]}")
 
+    @property
+    def delete(self):
+        for folders in self.dead_folders:
+            shutil.rmtree(folders)
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python main.py <path> [--delete]")
+        sys.exit(1)
+
+    delete_mode = "--delete" in sys.argv
 
     root = sys.argv[1]
     program = DeadFolderDetector(root)
@@ -56,6 +63,19 @@ def main():
 
     program.find_dead_folder()
     program.display
+
+    if delete_mode and program.dead_folders:
+        print()
+        answer = input("do you want to delete the folders? (Y/n)")
+        if answer.lower() == "y":
+            program.delete
+            print()
+            print("folders deletted succesfully")
+
+        else:
+            print("canceled")
+            print()
+            
 
 if __name__ == "__main__":
     main()
