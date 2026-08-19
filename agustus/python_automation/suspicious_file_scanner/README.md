@@ -1,8 +1,3 @@
-# Scanner File Mencurigakan (Versi Simpel)
-
-Satu file script Python (`scan.py`), tanpa class/OOP, cuma pakai
-fungsi biasa. Cocok buat belajar `pathlib` dan `shutil`.
-
 ## Struktur folder
 
 ```
