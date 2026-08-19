@@ -30,7 +30,9 @@ class Base_suspicious_file_scanner(ABC):
         def display_verbose(self):
             pass
 
-        
+        @abstractmethod
+        def analyze_word(self):
+            pass
         
     
 class Suspicious_file_scanner(Base_suspicious_file_scanner):
