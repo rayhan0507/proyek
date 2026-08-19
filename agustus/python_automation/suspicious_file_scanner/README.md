@@ -26,13 +26,6 @@ Script ini otomatis akan:
 
 ## Isi `scan.py`, bagian per bagian
 
-| Fungsi | Fungsinya apa |
-|---|---|
-| `cek_satu_file(file_path)` | Cek 1 file, kembalikan alasan kalau mencurigakan |
-| `scan_folder(nama_folder)` | Telusuri semua file pakai `Path.rglob("*")`, panggil `cek_satu_file` satu-satu |
-| `tampilkan_laporan(temuan)` | Cetak hasil ke layar |
-| `karantina_file(temuan)` | Pindahkan file pakai `shutil.move()` |
-| `zip_folder(folder)` | Bikin file `.zip` pakai `shutil.make_archive()` |
 
 ## 3 kategori yang dideteksi
 
