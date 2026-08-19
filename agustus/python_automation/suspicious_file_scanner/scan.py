@@ -17,6 +17,18 @@ class Base_suspicious_file_scanner(ABC):
         @abstractmethod
         def find_suspicious_file(self):
             pass
+
+        @abstractmethod
+        def analyze_suffix(self):
+            pass
+
+        @abstractmethod
+        def display_normal(self):
+            pass
+
+        @abstractmethod
+        def display_verbose(self):
+            pass
         
     
 class Suspicious_file_scanner(Base_suspicious_file_scanner):
@@ -28,25 +40,47 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
         return self.suspicious_extensions
 
+    def analyze_word(self):
+        for file in self.root.rglob("*"):
+            for word in range(len(self.DANGEROUS_WORDS)):
+                if self.DANGEROUS_WORDS[word] in file.name:
+                    self.suspicious_filenames.append(file)
+
     def find_suspicious_file(self):
-        suffix = self.analyze_suffix()
-        return suffix
+        self.analyze_suffix()
+        self.analyze_word()
 
 
     def display(self, status: bool):
-        def display_normal(path: list):
-            print("Suspicious file extensions:")
-            for i, x in enumerate(path, start=1):
+        def display_normal(list_extensions: list, list_filenames: list):
+            print("===== Suspicious file extensions =====")
+            for i, x in enumerate(list_extensions, start=1):
                 print(f"{i}. {x.name}")
-        def display_verbose(path: list):
-            for i, x in enumerate(path, start=1):
-                print(f"{i}. {x.resolve()}")
+            print()
 
-        sus_extension = self.find_suspicious_file()
+            print("===== Suspicious filenames =====")
+            for i, x in enumerate(list_filenames, start=1):
+                print(f"{i}. {x.name}")
+
+        def display_verbose(list_extensions: list, list_filenames: list):
+            print("===== Suspicious file extensions =====")
+            for i, x in enumerate(list_extensions, start=1):
+                print(f"{i}. {x.resolve()}")
+            print()
+
+            for i, x in enumerate(list_filenames, start=1):
+                print(f"{i}. {x.resolve()}")
+            print()
+
+            
+        sus_extension = self.suspicious_extensions
+        sus_filename = self.suspicious_filenames
         if status:
-            display_verbose(sus_extension)
+            display_verbose(sus_extension, sus_filename)
         else:
-            display_normal(sus_extension)
+            display_normal(sus_extension, sus_filename)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.usage = "Run like this -> file.py [path] or file.py ([-x] / [--x]) [path]" 
