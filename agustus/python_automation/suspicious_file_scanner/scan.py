@@ -28,8 +28,13 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
         return self.suspicious_extensions
 
-    def find_suspicious_file(self, flag: bool):
-        def display(path: list):
+    def find_suspicious_file(self):
+        suffix = self.analyze_suffix()
+        return suffix
+
+
+    def display(self, status: bool):
+        def display_normal(path: list):
             print("Suspicious file extensions:")
             for i, x in enumerate(path, start=1):
                 print(f"{i}. {x.name}")
@@ -37,12 +42,11 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
             for i, x in enumerate(path, start=1):
                 print(f"{i}. {x.resolve()}")
 
-        suffix = self.analyze_suffix()
-        if flag:
-            display_verbose(suffix)
+        sus_extension = self.find_suspicious_file()
+        if status:
+            display_verbose(sus_extension)
         else:
-            display(suffix)
-
+            display_normal(sus_extension)
 def main():
     parser = argparse.ArgumentParser()
     parser.usage = "Run like this -> file.py [path] or file.py ([-x] / [--x]) [path]" 
@@ -53,7 +57,8 @@ def main():
     root: Path = args.path
 
     program = Suspicious_file_scanner(root)
-    program.find_suspicious_file(args.verbose)
+    program.find_suspicious_file()  
+    program.display(args.verbose)
     
 
 
