@@ -29,6 +29,8 @@ class Base_suspicious_file_scanner(ABC):
         @abstractmethod
         def display_verbose(self):
             pass
+
+        
         
     
 class Suspicious_file_scanner(Base_suspicious_file_scanner):
