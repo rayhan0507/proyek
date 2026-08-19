@@ -14,30 +14,47 @@ class Base_suspicious_file_scanner(ABC):
         self.suspicious_extensions = []
         self.suspicious_filenames = []
 
-
+        @abstractmethod
+        def find_suspicious_file(self):
+            pass
+        
     
 class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
-    def analyze_suffix(self):
+    def analyze_suffix(self) -> list:
         for file in self.root.rglob("*"):
             if file.suffix in self.EXTENSION_EXECUTABLE:
                 self.suspicious_extensions.append(file)
 
-    def find_suspicious_file(self):
-        suffix = self.analyze_suffix()
-        print(suffix)
+        return self.suspicious_extensions
 
+    def find_suspicious_file(self, flag: bool):
+        def display(path: list):
+            print("Suspicious file extensions:")
+            for i, x in enumerate(path, start=1):
+                print(f"{i}. {x.name}")
+        def display_verbose(path: list):
+            for i, x in enumerate(path, start=1):
+                print(f"{i}. {x.resolve()}")
+
+        suffix = self.analyze_suffix()
+        if flag:
+            display_verbose(suffix)
+        else:
+            display(suffix)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.usage = "Run like this: file.py [-v]" 
-    parser.add_argument("-v", "--verbose", help="provides a verbose description")
-
+    parser.usage = "Run like this -> file.py [path] or file.py ([-x] / [--x]) [path]" 
+    parser.add_argument("path", help="path address")
+    parser.add_argument("-v", "--verbose", help="provides a verbose description", action="store_true")
+    
     args: argparse.Namespace = parser.parse_args()
+    root: Path = args.path
 
-    root = args.verbose
     program = Suspicious_file_scanner(root)
-    program.find_suspicious_file()
+    program.find_suspicious_file(args.verbose)
+    
 
 
 if __name__ == "__main__":
